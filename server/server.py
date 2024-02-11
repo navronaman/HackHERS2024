@@ -6,6 +6,12 @@ from flask import (
 )
 import json
 import random
+from backend import (
+    get_search_response_from_zillow,
+    display_search_items,
+    get_zpid_api_response,
+    display_zpid_info)
+
 
 app = Flask(__name__)
 
@@ -33,10 +39,27 @@ def generate_random_number():
 def get_property_info():
     data = request.get_data()
     parsed_data = json.loads(data)
-    location = parsed_data['location']
-    price = parsed_data['price']
+
     
-    return jsonify({'zestimate': 4000, 'price': 16888, 'images': ['https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png']})
+    api_response = get_search_response_from_zillow(
+        location=parsed_data['location'],
+        price_min=parsed_data['price_min'],
+        price_max=parsed_data['price_max'],
+        beds_min=parsed_data['beds_min'],
+        beds_max=parsed_data['beds_max'],
+        baths_min=parsed_data['baths_min'],
+        baths_max=parsed_data['baths_max'],
+        square_feet_min=parsed_data['square_feet_min'],
+        square_feet_max=parsed_data['square_feet_max'],
+        isApartment=parsed_data['isApartment'],
+        isCondo=parsed_data['isCondo'],
+        isTownhouse=parsed_data['isTownhouse'],
+        sale_or_rent=parsed_data['sale_or_rent']
+    )
+    
+    dict_response = display_search_items(api_response)
+    
+    return jsonify(dict_response)
     
     
 

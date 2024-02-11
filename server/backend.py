@@ -15,7 +15,7 @@ querystring = {
     }
 
 HEADERS = {
-	"X-RapidAPI-Key": "8960a9414bmsh79b0e7d134ed3eap198937jsn3a471298130f",
+	"X-RapidAPI-Key": "d7e75d25efmsh4de6e9164d6480bp1245a0jsn1294f76079f6",
 	"X-RapidAPI-Host": "zillow56.p.rapidapi.com"
 }
 
@@ -32,11 +32,20 @@ def get_search_response_from_zillow(
     isApartment,
     isCondo,
     isTownhouse,
+    sale_or_rent="forSale",
     url=URL,
     headers=HEADERS,
-    
-    
 ):
+    
+    price_min = int(price_min)
+    price_max = int(price_max)
+    beds_min = int(beds_min)
+    beds_max = int(beds_max)
+    baths_min = int(baths_min)
+    baths_max = int(baths_max)
+    square_feet_min = int(square_feet_min)
+    square_feet_max = int(square_feet_max)
+    
     
     if isApartment == True:
         isApartment = "true"
@@ -63,6 +72,7 @@ def get_search_response_from_zillow(
     "isComingSoon":"false",
     "onlyWithPhotos":"true",
     # undefault values
+    "state=us": f"{sale_or_rent}",
     "price_min": f"{price_min}",
     "price_max": f"{price_max}",
     "beds_min": f"{beds_min}",
@@ -84,19 +94,19 @@ def get_search_response_from_zillow(
 #  { zpid : ("image", "price, "address") }"}
     
 def display_search_items(response):
-    for item in response['searchResults']['listResults']:
-        print(f"Price: {item['price']}")
-        print(f"Address: {item['address']}")
-        print(f"Bedrooms: {item['beds']}")
-        print(f"Bathrooms: {item['baths']}")
-        print(f"Square Feet: {item['sqft']}")
-        print(f"Image: {item['imgSrc']}")
-        print("\n")
-    return
+    
+    n = int(response['totalResultCount'])
+    
+    display_array = []
+    
+    for item in response['results']:
+        display_array.append({'zpid': item['zpid'], 'imgSrc': item['imgSrc'], 'price': item['price'], 'streetAddress': item['streetAddress']})        
+    return display_array
 
 def get_zpid_api_response(zpid, headers=HEADERS, url=URL2):
     querystring = {"zpid":f"{zpid}"}
     response = requests.get(url, headers=headers, params=querystring)
+    return response.json()
     
 def display_zpid_info(response):
     # price
@@ -110,28 +120,28 @@ def display_zpid_info(response):
     print(f"Images: {response['images']}")
     return
     
-
-    
-    
-    
-
-    
-
-
+  
 if __name__ == "__main__":
     
-    print(get_search_response_from_zillow(
+    
+    response_api = get_search_response_from_zillow(
         location="08852",
         price_min=100000,
-        price_max=500000,
+        price_max='500000',
         beds_min=1,
         beds_max=3,
         baths_min=1,
         baths_max=3,
         square_feet_min=1000,
         square_feet_max=2000,
+        sale_or_rent="forRent",
         isApartment=True,
         isCondo=True,
         isTownhouse=True,
-    ))
+    )
     
+    display_array = display_search_items(response_api)
+
+    for item in display_array:
+        print(f"ZPID: {item['zpid']} \n Image: {item['imgSrc']} \n Price: {item['price']} \n Address: {item['streetAddress']}")
+        print("\n")            
