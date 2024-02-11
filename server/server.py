@@ -62,6 +62,18 @@ def get_property_info():
     return jsonify(dict_response)
     
     
+@app.route('/zpid', methods=['POST', 'GET'])
+def get_zpid_info():
+    data = request.get_data()
+    parsed_data = json.loads(data)
+    
+    api_response = get_zpid_api_response(
+        zpid=parsed_data['zpid']
+    )
+    
+    dict_response = display_zpid_info(api_response)
+    
+    return jsonify(dict_response)
 
 if __name__ == '__main__':
     app.run(debug=True)

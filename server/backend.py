@@ -1,5 +1,5 @@
 import requests
-import progpt
+# from ProGPT import Generative, Conversation
 
 URL = "https://zillow56.p.rapidapi.com/search"
 URL2 = "https://zillow56.p.rapidapi.com/property"
@@ -16,7 +16,8 @@ querystring = {
     }
 
 HEADERS = {
-	"X-RapidAPI-Key": "77b988d7b0mshe29695b4b1b70e4p143e3cjsnf8aebb0e1e9d",
+    # change api key
+	"X-RapidAPI-Key": "5eb3bd3ed8msh6d318f2c32b8c8cp17e3cfjsn8e855d87424a",
 	"X-RapidAPI-Host": "zillow56.p.rapidapi.com"
 }
 
@@ -134,38 +135,100 @@ def display_zpid_info(response):
     # nearbyhomes [extra]
     # rent or rent zestimate
     
-    return 
+    try:
+        if response:
+            
+            photos = response["photos"]
+
+            # Extract all the jpeg URLs with their respective widths
+            jpeg_urls = [image["url"] for photo in photos for image in photo["mixedSources"]["jpeg"]]
+
+            # Create a dictionary to store URLs based on their widths
+            url_dict = {}
+            for photo in photos:
+                for image in photo["mixedSources"]["jpeg"]:
+                    url_dict[image["width"]] = image["url"]
+
+            # Get the maximum width of the jpeg images
+            max_width = max(url_dict.keys())
+
+            # Filter out only the JPEG URLs with the highest width
+            imagesArray = [url_dict[width] for width in url_dict if width == max_width]
+            
+            try:         
+                return {
+                    "price": response['price'],
+                    "address": response['abbreviatedAddress'],
+                    "city": response['address']['city'],
+                    "state": response['address']['state'],
+                    "zip": response['address']['zipcode'],
+                    
+                    "bathrooms": response['bathrooms'],
+                    "bedrooms": response['bedrooms'],
+                    
+                    "homeInsights": response['homeInsights'][0]['insights'][0]['phrases'],
+                    "homeType": response['homeType'],
+                    
+                    "imagesArray": imagesArray,
+                    "rentZestimate": response['rentZestimate'],
+                    "mortgage15" : response['mortgageRates']['mortgage15YearFixedRate'],
+                    "mortgage30" : response['mortgageRates']['mortgage30YearFixedRate'],
+                }
+                
+            except (TypeError, ValueError, KeyError):
+                return {
+                    "price": response['price'],
+                    "address": response['abbreviatedAddress'],
+                    "city": response['address']['city'],
+                    "state": response['address']['state'],
+                    "zip": response['address']['zipcode'],
+                    
+                    "bathrooms": response['bathrooms'],
+                    "bedrooms": response['bedrooms'],
+                    
+                    "homeInsights": response['homeInsights'][0]['insights'][0]['phrases'],
+                    "homeType": response['homeType'],
+                    
+                    "imagesArray": imagesArray,
+                    "rentZestimate": response['rentZestimate'],
+                }
+            
+        
+        elif response == None:
+            print("Error")
+            return {"Error": "No response from Zillow"}
     
-    print(f"Zestimate: {response['zestimate']}")
-    print(f"Price: {response['price']}")
-    print(f"Images: {response['images']}")
-    return
+    except KeyError:
+        print("Error")
+        return {"Error": "No response from Zillow"}
     
   
 if __name__ == "__main__":
     
     
-    response_api = get_search_response_from_zillow(
-        location="08852",
-        price_min=100000,
-        price_max='500000',
-        beds_min=1,
-        beds_max=3,
-        baths_min=1,
-        baths_max=3,
-        square_feet_min=1000,
-        square_feet_max=2000,
-        sale_or_rent="forRent",
-        isApartment=True,
-        isCondo=True,
-        isTownhouse=True,
-    )
+    # response_api = get_search_response_from_zillow(
+    #     location="08852",
+    #     price_min=100000,
+    #     price_max='500000',
+    #     beds_min=1,
+    #     beds_max=3,
+    #     baths_min=1,
+    #     baths_max=3,
+    #     square_feet_min=1000,
+    #     square_feet_max=2000,
+    #     sale_or_rent="forRent",
+    #     isApartment=True,
+    #     isCondo=True,
+    #     isTownhouse=True,
+    # )
     
-    display_array = display_search_items(response_api)
+    # display_array = display_search_items(response_api)
 
-    for item in display_array:
-        print(f"ZPID: {item['zpid']} \n Image: {item['imgSrc']} \n Price: {item['price']} \n Address: {item['streetAddress']}")
-        print("\n")            
+    # for item in display_array:
+    #     print(f"ZPID: {item['zpid']} \n Image: {item['imgSrc']} \n Price: {item['price']} \n Address: {item['streetAddress']}")
+    #     print("\n")   
+    
+    rep = get_zpid_api_response(2062003050)
+    print(display_zpid_info(rep))
         
         
-    print()
