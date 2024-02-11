@@ -15,7 +15,7 @@ querystring = {
     }
 
 HEADERS = {
-	"X-RapidAPI-Key": "d7e75d25efmsh4de6e9164d6480bp1245a0jsn1294f76079f6",
+	"X-RapidAPI-Key": "77b988d7b0mshe29695b4b1b70e4p143e3cjsnf8aebb0e1e9d",
 	"X-RapidAPI-Host": "zillow56.p.rapidapi.com"
 }
 
@@ -87,6 +87,12 @@ def get_search_response_from_zillow(
     }
     
     response = requests.get(url, headers=headers, params=querystring)
+    
+    if response.status_code != 200:
+        print(f"Error: {response.status_code}")
+        print(f"Response: {response.text}")
+        return None
+    
     return response.json()
 
 ## PLEASE GET ZPID
@@ -95,13 +101,24 @@ def get_search_response_from_zillow(
     
 def display_search_items(response):
     
-    n = int(response['totalResultCount'])
+    try:
+        if response:
+            
+            n = int(response['totalResultCount'])
+            
+            display_array = []
+            
+            for item in response['results']:
+                display_array.append({'zpid': item['zpid'], 'imgSrc': item['imgSrc'], 'price': item['price'], 'streetAddress': item['streetAddress']})        
+            return display_array
+        
+        elif response == None:
+            print("Error")
+            return {"Error": "No response from Zillow"}
     
-    display_array = []
-    
-    for item in response['results']:
-        display_array.append({'zpid': item['zpid'], 'imgSrc': item['imgSrc'], 'price': item['price'], 'streetAddress': item['streetAddress']})        
-    return display_array
+    except KeyError:
+        print("Error")
+        return {"Error": "No response from Zillow"}
 
 def get_zpid_api_response(zpid, headers=HEADERS, url=URL2):
     querystring = {"zpid":f"{zpid}"}
@@ -115,6 +132,9 @@ def display_zpid_info(response):
     # home instights -> 0 -> insights -> phrases
     # nearbyhomes [extra]
     # rent or rent zestimate
+    
+    return 
+    
     print(f"Zestimate: {response['zestimate']}")
     print(f"Price: {response['price']}")
     print(f"Images: {response['images']}")
@@ -145,3 +165,6 @@ if __name__ == "__main__":
     for item in display_array:
         print(f"ZPID: {item['zpid']} \n Image: {item['imgSrc']} \n Price: {item['price']} \n Address: {item['streetAddress']}")
         print("\n")            
+        
+        
+    print()
