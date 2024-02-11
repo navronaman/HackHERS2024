@@ -4,6 +4,7 @@ from flask import (
     jsonify,
     request
 )
+import json
 import random
 
 app = Flask(__name__)
@@ -27,6 +28,17 @@ def generate_random_number():
     # Return JSON response with the random number
     return jsonify({'random_number': random_num})
 
+
+@app.route('/search', methods=['POST', 'GET'])
+def get_property_info():
+    data = request.get_data()
+    parsed_data = json.loads(data)
+    location = parsed_data['location']
+    price = parsed_data['price']
+    
+    return jsonify({'zestimate': 4000, 'price': 16888, 'images': ['https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png']})
+    
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
