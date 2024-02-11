@@ -43,18 +43,18 @@ def get_property_info():
     
     api_response = get_search_response_from_zillow(
         location=parsed_data['location'],
-        price_min=parsed_data['price_min'],
-        price_max=parsed_data['price_max'],
-        beds_min=parsed_data['beds_min'],
-        beds_max=parsed_data['beds_max'],
-        baths_min=parsed_data['baths_min'],
-        baths_max=parsed_data['baths_max'],
-        square_feet_min=parsed_data['square_feet_min'],
-        square_feet_max=parsed_data['square_feet_max'],
+        price_min=parsed_data['priceMin'],
+        price_max=parsed_data['priceMax'],
+        beds_min=parsed_data['bedsMin'],
+        beds_max=parsed_data['bedsMax'],
+        baths_min=parsed_data['bathsMin'],
+        baths_max=parsed_data['bathsMax'],
+        square_feet_min=parsed_data['sqftMin'],
+        square_feet_max=parsed_data['sqftMax'],
         isApartment=parsed_data['isApartment'],
         isCondo=parsed_data['isCondo'],
         isTownhouse=parsed_data['isTownhouse'],
-        sale_or_rent=parsed_data['sale_or_rent']
+        sale_or_rent=parsed_data['saleOrRent']
     )
     
     dict_response = display_search_items(api_response)
