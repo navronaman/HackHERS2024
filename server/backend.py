@@ -1,6 +1,7 @@
 import requests
 
 URL = "https://zillow56.p.rapidapi.com/search"
+URL2 = "https://zillow56.p.rapidapi.com/property"
 
 querystring = {
     "location":"houston, tx",
@@ -18,7 +19,7 @@ HEADERS = {
 	"X-RapidAPI-Host": "zillow56.p.rapidapi.com"
 }
 
-def get_api_response_from_zillow(
+def get_search_response_from_zillow(
     location,
     price_min,
     price_max,
@@ -78,12 +79,48 @@ def get_api_response_from_zillow(
     response = requests.get(url, headers=headers, params=querystring)
     return response.json()
 
+## PLEASE GET ZPID
+## THIS IS HOW IT SHOULD BE
+#  { zpid : ("image", "price, "address") }"}
+    
+def display_search_items(response):
+    for item in response['searchResults']['listResults']:
+        print(f"Price: {item['price']}")
+        print(f"Address: {item['address']}")
+        print(f"Bedrooms: {item['beds']}")
+        print(f"Bathrooms: {item['baths']}")
+        print(f"Square Feet: {item['sqft']}")
+        print(f"Image: {item['imgSrc']}")
+        print("\n")
+    return
+
+def get_zpid_api_response(zpid, headers=HEADERS, url=URL2):
+    querystring = {"zpid":f"{zpid}"}
+    response = requests.get(url, headers=headers, params=querystring)
+    
+def display_zpid_info(response):
+    # price
+    # address
+    # images array
+    # home instights -> 0 -> insights -> phrases
+    # nearbyhomes [extra]
+    # rent or rent zestimate
+    print(f"Zestimate: {response['zestimate']}")
+    print(f"Price: {response['price']}")
+    print(f"Images: {response['images']}")
+    return
+    
+
+    
+    
+    
+
     
 
 
 if __name__ == "__main__":
     
-    print(get_api_response_from_zillow(
+    print(get_search_response_from_zillow(
         location="08852",
         price_min=100000,
         price_max=500000,
